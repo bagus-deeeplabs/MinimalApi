@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and Deployment
+name: Build and Deployment - .NET 7.0
 
 on:
   push:
@@ -23,11 +23,21 @@ jobs:
         with:
           dotnet-version: '7.0.x'
           include-prerelease: true
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
       - name: Run the unit tests
-        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+      - name: Install Report Generator Tool
+        run: |
+            dotnet new tool-manifest
+            dotnet tool install dotnet-reportgenerator-globaltool
+
+      - name: Generate Report
+        run: |
+            dotnet reportgenerator -reports:/home/runner/work/MinimalApi/MinimalApi/Tests/coverage.opencover.xml -targetdir:"coveragereport" -reporttypes:Html
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
