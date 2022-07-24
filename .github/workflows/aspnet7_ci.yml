@@ -27,7 +27,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Run the unit tests
-        run: dotnet test
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
