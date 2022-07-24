@@ -14,20 +14,17 @@ public static class TodoApi
 {
     public static IEndpointRouteBuilder MapApiEndpoints(this IEndpointRouteBuilder routes)
     {
-        routes.MapGet("/todoitems", GetAllTodos)
-        .Produces(200, typeof(PagedResults<TodoItemOutput>)).ProducesProblem(401);
-        routes.MapGet("/todoitems/{id}", GetTodo).Produces(200, typeof(TodoItemOutput)).ProducesProblem(401);
-        routes.MapPost("/todoitems", CreateTodo).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(401).ProducesProblem(400);
-
-        routes.MapPut("/todoitems/{id}", UpdateTodo).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(404).ProducesProblem(401);
-
-        routes.MapDelete("/todoitems/{id}", DeleteTodo).Accepts<TodoItemInput>("application/json").Produces(204).ProducesProblem(404).ProducesProblem(401);
+        routes.MapGet("/todoitems", GetAllTodoItems).Produces(200, typeof(PagedResults<TodoItemOutput>)).ProducesProblem(401);
+        routes.MapGet("/todoitems/{id}", GetTodoItemById).Produces(200, typeof(TodoItemOutput)).ProducesProblem(401);
+        routes.MapPost("/todoitems", CreateTodoItem).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(401).ProducesProblem(400);
+        routes.MapPut("/todoitems/{id}", UpdateTodoItem).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(404).ProducesProblem(401);
+        routes.MapDelete("/todoitems/{id}", DeleteTodoItem).Accepts<TodoItemInput>("application/json").Produces(204).ProducesProblem(404).ProducesProblem(401);
 
         return routes;
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public static async Task<IResult> DeleteTodo(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id)
+    public static async Task<IResult> DeleteTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
         var user = http.User;
@@ -35,14 +32,14 @@ public static class TodoApi
         {
             dbContext.TodoItems.Remove(todoItem);
             await dbContext.SaveChangesAsync();
-            return Results.NoContent();
+            return TypedResults.NoContent();
         }
 
-        return Results.NotFound();
+        return TypedResults.NotFound();
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public static async Task<IResult> UpdateTodo(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id, TodoItemInput todoItemInput)
+    public static async Task<IResult> UpdateTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id, TodoItemInput todoItemInput)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
         var user = http.User;
@@ -50,19 +47,19 @@ public static class TodoApi
         {
             todoItem.IsCompleted = todoItemInput.IsCompleted;
             await dbContext.SaveChangesAsync();
-            return Results.NoContent();
+            return TypedResults.NoContent();
         }
 
-        return Results.NotFound();
+        return TypedResults.NotFound();
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public static async Task<IResult> CreateTodo(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, TodoItemInput todoItemInput, IValidator<TodoItemInput> todoItemInputValidator)
+    public static async Task<IResult> CreateTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, TodoItemInput todoItemInput, IValidator<TodoItemInput> todoItemInputValidator)
     {
         var validationResult = todoItemInputValidator.Validate(todoItemInput);
         if (!validationResult.IsValid)
         {
-            return Results.ValidationProblem(validationResult.ToDictionary());
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
         }
 
         using var dbContext = dbContextFactory.CreateDbContext();
@@ -79,19 +76,19 @@ public static class TodoApi
         todoItem.CreatedOn = DateTime.UtcNow;
         dbContext.TodoItems.Add(todoItem);
         await dbContext.SaveChangesAsync();
-        return Results.Created($"/todoitems/{todoItem.Id}", new TodoItemOutput(todoItem.Title, todoItem.IsCompleted, todoItem.CreatedOn));
+        return TypedResults.Created($"/todoitems/{todoItem.Id}", new TodoItemOutput(todoItem.Title, todoItem.IsCompleted, todoItem.CreatedOn));
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public static async Task<IResult> GetTodo(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id)
+    public static async Task<IResult> GetTodoItemById(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
         var user = http.User;
-        return await dbContext.TodoItems.FirstOrDefaultAsync(t => t.User.Username == user.FindFirst(ClaimTypes.NameIdentifier)!.Value && t.Id == id) is TodoItem todo ? Results.Ok(new TodoItemOutput(todo.Title, todo.IsCompleted, todo.CreatedOn)) : Results.NotFound();
+        return await dbContext.TodoItems.FirstOrDefaultAsync(t => t.User.Username == user.FindFirst(ClaimTypes.NameIdentifier)!.Value && t.Id == id) is TodoItem todo ? TypedResults.Ok(new TodoItemOutput(todo.Title, todo.IsCompleted, todo.CreatedOn)) : TypedResults.NotFound();
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public static async Task<IResult> GetAllTodos(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, [FromQuery(Name = "page")] int? page, [FromQuery(Name = "pageSize")] int? pageSize)
+    public static async Task<IResult> GetAllTodoItems(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, [FromQuery(Name = "page")] int? page = 1, [FromQuery(Name = "pageSize")] int? pageSize = 10)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
         var user = http.User;
@@ -107,7 +104,7 @@ public static class TodoApi
         var mod = totalNumberOfRecords % pageSize;
         var totalPageCount = (totalNumberOfRecords / pageSize) + (mod == 0 ? 0 : 1);
 
-        return Results.Ok(new PagedResults<TodoItemOutput>()
+        return TypedResults.Ok(new PagedResults<TodoItemOutput>()
         {
             PageNumber = page.Value,
             PageSize = pageSize!.Value,

@@ -16,7 +16,6 @@ using System.Security.Claims;
 using System.Text;
 using MinimalApi;
 using MinimalApi.GraphQL;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
@@ -34,7 +33,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Issuer"],
             ValidAudience = builder.Configuration["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"]!))
         };
     });
 
@@ -137,7 +136,7 @@ app.MapPost("/token", async (IDbContextFactory<TodoDbContext> dbContextFactory, 
         expires: DateTime.UtcNow.AddDays(60),
         notBefore: DateTime.UtcNow,
         signingCredentials: new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"])),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"]!)),
             SecurityAlgorithms.HmacSha256)
     );
 
