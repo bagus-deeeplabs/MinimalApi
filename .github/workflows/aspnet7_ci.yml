@@ -38,7 +38,13 @@ jobs:
       - name: Generate Report
         run: |
             dotnet reportgenerator -reports:/home/runner/work/MinimalApi/MinimalApi/Tests/coverage.cobertura.xml -targetdir:"coveragereport" -reporttypes:Html
-
+      
+      - name: Upload code coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coveragereport
+          path: ${{env.DOTNET_ROOT}}/coveragereport/index.html
+          
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
