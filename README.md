@@ -1,10 +1,15 @@
-# ASP.NET Core 6.0 - Minimal API Example.
+# ASP.NET Core 7.0 - Minimal API Example.
 
-ASP.NET Core 6.0 - Minimal API Example - Todo API implementation using ASP.NET Core Minimal API, GraphQL, Entity Framework Core, Token authentication and Open API.
+ASP.NET Core 7.0 - Minimal API Example - Todo API implementation using ASP.NET Core Minimal API, GraphQL, Entity Framework Core, Token authentication and Open API.
 
 [![Build and Deployment](https://github.com/anuraj/MinimalApi/actions/workflows/main_minimalapi-demo.yml/badge.svg)](https://github.com/anuraj/MinimalApi/actions/workflows/main_minimalapi-demo.yml)
 
 ## Features
+
+## July 24, 2022
+* Upgraded to .NET 7 - Preview.
+* Added Unit Tests (Unit Tests support for Minimal API available in .NET 7)
+
 ### July 22, 2022
 * Implemented Paging.
 
