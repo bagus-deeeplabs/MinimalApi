@@ -6,6 +6,10 @@ ASP.NET Core 7.0 - Minimal API Example - Todo API implementation using ASP.NET C
 
 ## Features
 
+## July 25, 2022
+* Route groups Implemented.
+* Code coverage implemented.
+
 ## July 24, 2022
 * Upgraded to .NET 7 - Preview.
 * Added Unit Tests (Unit Tests support for Minimal API available in .NET 7)
@@ -16,9 +20,6 @@ ASP.NET Core 7.0 - Minimal API Example - Todo API implementation using ASP.NET C
 ### July 21, 2022
 * Validation support using FluentValidation
 * Refactoring and fixed all the warnings.
-* Deploying to Azure App Services - Online Demos.
-	- [REST API - Online Demo](https://minimalapi-demo.azurewebsites.net/swagger/index.html)
-	- [GraphQL - Online Demo](https://minimalapi-demo.azurewebsites.net/graphql)
 * Graph QL Authentication
 
 ### December 1, 2021
