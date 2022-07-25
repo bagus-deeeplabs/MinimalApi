@@ -102,7 +102,7 @@ if (databaseContext != null)
     databaseContext.Database.EnsureCreated();
 }
 
-app.MapApiEndpoints();
+app.MapGroup("").MapApiEndpoints().RequireAuthorization().WithMetadata();
 
 app.MapPost("/token", async (IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, UserInput userInput, IValidator<UserInput> userInputValidator) =>
 {
