@@ -28,7 +28,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Run the unit tests
-        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+        run: dotnet test --verbosity q --nologo /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
       - name: Install Report Generator Tool
         run: |
