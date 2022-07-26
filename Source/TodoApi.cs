@@ -32,10 +32,9 @@ public static class TodoApi
         return groups;
     }
 
-    public static async Task<IResult> DeleteTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id)
+    public static async Task<IResult> DeleteTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, ClaimsPrincipal user, int id)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
-        var user = http.User;
         if (await dbContext.TodoItems.FirstOrDefaultAsync(t => t.User.Username == user.FindFirst(ClaimTypes.NameIdentifier)!.Value && t.Id == id) is TodoItem todoItem)
         {
             dbContext.TodoItems.Remove(todoItem);
@@ -46,10 +45,9 @@ public static class TodoApi
         return TypedResults.NotFound();
     }
 
-    public static async Task<IResult> UpdateTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id, TodoItemInput todoItemInput)
+    public static async Task<IResult> UpdateTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, ClaimsPrincipal user, int id, TodoItemInput todoItemInput)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
-        var user = http.User;
         if (await dbContext.TodoItems.FirstOrDefaultAsync(t => t.User.Username == user.FindFirst(ClaimTypes.NameIdentifier)!.Value && t.Id == id) is TodoItem todoItem)
         {
             todoItem.IsCompleted = todoItemInput.IsCompleted;
@@ -60,7 +58,7 @@ public static class TodoApi
         return TypedResults.NotFound();
     }
 
-    public static async Task<IResult> CreateTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, TodoItemInput todoItemInput, IValidator<TodoItemInput> todoItemInputValidator)
+    public static async Task<IResult> CreateTodoItem(IDbContextFactory<TodoDbContext> dbContextFactory, ClaimsPrincipal user, TodoItemInput todoItemInput, IValidator<TodoItemInput> todoItemInputValidator)
     {
         var validationResult = todoItemInputValidator.Validate(todoItemInput);
         if (!validationResult.IsValid)
@@ -75,27 +73,24 @@ public static class TodoApi
             IsCompleted = todoItemInput.IsCompleted,
         };
 
-        var httpUser = http.User;
-        var user = await dbContext.Users.FirstOrDefaultAsync(t => t.Username == httpUser.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        todoItem.User = user!;
-        todoItem.UserId = user!.Id;
+        var currentUser = await dbContext.Users.FirstOrDefaultAsync(t => t.Username == user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        todoItem.User = currentUser!;
+        todoItem.UserId = currentUser!.Id;
         todoItem.CreatedOn = DateTime.UtcNow;
         dbContext.TodoItems.Add(todoItem);
         await dbContext.SaveChangesAsync();
         return TypedResults.Created($"/todoitems/{todoItem.Id}", new TodoItemOutput(todoItem.Title, todoItem.IsCompleted, todoItem.CreatedOn));
     }
 
-    public static async Task<IResult> GetTodoItemById(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, int id)
+    public static async Task<IResult> GetTodoItemById(IDbContextFactory<TodoDbContext> dbContextFactory, ClaimsPrincipal user, int id)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
-        var user = http.User;
         return await dbContext.TodoItems.FirstOrDefaultAsync(t => t.User.Username == user.FindFirst(ClaimTypes.NameIdentifier)!.Value && t.Id == id) is TodoItem todo ? TypedResults.Ok(new TodoItemOutput(todo.Title, todo.IsCompleted, todo.CreatedOn)) : TypedResults.NotFound();
     }
 
-    public static async Task<IResult> GetAllTodoItems(IDbContextFactory<TodoDbContext> dbContextFactory, HttpContext http, [FromQuery(Name = "page")] int? page = 1, [FromQuery(Name = "pageSize")] int? pageSize = 10)
+    public static async Task<IResult> GetAllTodoItems(IDbContextFactory<TodoDbContext> dbContextFactory, ClaimsPrincipal user, [FromQuery(Name = "page")] int? page = 1, [FromQuery(Name = "pageSize")] int? pageSize = 10)
     {
         using var dbContext = dbContextFactory.CreateDbContext();
-        var user = http.User;
         pageSize ??= 10;
         page ??= 1;
 
