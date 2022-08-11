@@ -16,7 +16,7 @@ public static class TodoApi
         routes.MapGet("/todoitems/{id}", GetTodoItemById).Produces(200, typeof(TodoItemOutput)).ProducesProblem(401);
         routes.MapPost("/todoitems", CreateTodoItem).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(401).ProducesProblem(400);
         routes.MapPut("/todoitems/{id}", UpdateTodoItem).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(404).ProducesProblem(401);
-        routes.MapDelete("/todoitems/{id}", DeleteTodoItem).Accepts<TodoItemInput>("application/json").Produces(204).ProducesProblem(404).ProducesProblem(401);
+        routes.MapDelete("/todoitems/{id}", DeleteTodoItem).Produces(204).ProducesProblem(404).ProducesProblem(401);
 
         return routes;
     }
@@ -25,9 +25,9 @@ public static class TodoApi
     {
         groups.MapGet("/todoitems", GetAllTodoItems).Produces(200, typeof(PagedResults<TodoItemOutput>)).ProducesProblem(401);
         groups.MapGet("/todoitems/{id}", GetTodoItemById).Produces(200, typeof(TodoItemOutput)).ProducesProblem(401);
-        groups.MapPost("/todoitems", CreateTodoItem);//.Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(401).ProducesProblem(400);
+        groups.MapPost("/todoitems", CreateTodoItem).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(401).ProducesProblem(400);
         groups.MapPut("/todoitems/{id}", UpdateTodoItem).Accepts<TodoItemInput>("application/json").Produces(201).ProducesProblem(404).ProducesProblem(401);
-        groups.MapDelete("/todoitems/{id}", DeleteTodoItem).Accepts<TodoItemInput>("application/json").Produces(204).ProducesProblem(404).ProducesProblem(401);
+        groups.MapDelete("/todoitems/{id}", DeleteTodoItem).Produces(204).ProducesProblem(404).ProducesProblem(401);
 
         return groups;
     }

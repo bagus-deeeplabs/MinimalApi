@@ -1,6 +1,4 @@
 using System.Security.Claims;
-using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using MinimalApi.Data;
