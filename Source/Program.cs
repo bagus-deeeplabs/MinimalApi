@@ -1,21 +1,4 @@
-using FluentValidation;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-
-using MinimalApi.Data;
-using MinimalApi.Models;
-using MinimalApi.ViewModels;
-
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using MinimalApi;
-using MinimalApi.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
@@ -172,11 +155,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapGraphQL();
-});
-
+app.Map("/graphql", () => app.MapGraphQL());
 app.Run();
 
 

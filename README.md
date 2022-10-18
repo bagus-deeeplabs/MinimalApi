@@ -5,6 +5,8 @@ ASP.NET Core 7.0 - Minimal API Example - Todo API implementation using ASP.NET C
 [![Build and Deployment](https://github.com/anuraj/MinimalApi/actions/workflows/main_minimalapi-demo.yml/badge.svg)](https://github.com/anuraj/MinimalApi/actions/workflows/main_minimalapi-demo.yml)
 
 ## Features
+## October 18, 2022
+* NuGet packages upgraded to RC.
 
 ## July 25, 2022
 * Route groups Implemented.

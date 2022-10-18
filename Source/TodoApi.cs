@@ -1,10 +1,4 @@
-using System.Security.Claims;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MinimalApi.Data;
-using MinimalApi.Models;
-using MinimalApi.ViewModels;
 
 namespace MinimalApi;
 
