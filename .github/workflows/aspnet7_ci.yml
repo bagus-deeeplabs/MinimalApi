@@ -8,7 +8,7 @@ on:
     branches:
       - dev/aspnet7.0
     paths-ignore:
-      - 'README.md'
+      - "README.md"
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: "7.0.x"
           include-prerelease: true
 
       - name: Build with dotnet
@@ -29,23 +29,23 @@ jobs:
 
       - name: Install Required Tools
         run: |
-            dotnet new tool-manifest
-            dotnet tool install dotnet-reportgenerator-globaltool
-            dotnet tool install dotnet-coverage
+          dotnet new tool-manifest
+          dotnet tool install dotnet-reportgenerator-globaltool
+          dotnet tool install dotnet-coverage
 
       - name: Run the unit tests with code coverage
-        run: dotnet coverage collect dotnet test --output /home/runner/work/MinimalApi/MinimalApi/Tests/Coverage --output-format cobertura
+        run: dotnet coverage collect dotnet test --output ${{env.GITHUB_WORKSPACE}}/Tests/Coverage --output-format cobertura
 
       - name: Generate Report
         run: |
-            dotnet reportgenerator -reports:/home/runner/work/MinimalApi/MinimalApi/Tests/Coverage.cobertura.xml -targetdir:"/home/runner/work/MinimalApi/MinimalApi/Tests/coveragereport" -reporttypes:Html -assemblyfilters:+MinimalApi
-      
+          dotnet reportgenerator -reports:${{env.GITHUB_WORKSPACE}}/Tests/Coverage.cobertura.xml -targetdir:"${{env.GITHUB_WORKSPACE}}/Tests/coveragereport" -reporttypes:Html -assemblyfilters:+MinimalApi
+
       - name: Upload code coverage report
         uses: actions/upload-artifact@v2
         with:
           name: coveragereport
-          path: /home/runner/work/MinimalApi/MinimalApi/Tests/coveragereport
-          
+          path: ${{env.GITHUB_WORKSPACE}}/Tests/coveragereport
+
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
