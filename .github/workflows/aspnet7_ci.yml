@@ -38,7 +38,7 @@ jobs:
 
       - name: Generate Report
         run: |
-          dotnet reportgenerator -reports:${{ github.workspace }} /Tests/Coverage.cobertura.xml -targetdir:"${{ github.workspace }}/Tests/coveragereport" -reporttypes:Html -assemblyfilters:+MinimalApi
+          dotnet reportgenerator -reports:${{ github.workspace }}/Tests/Coverage.cobertura.xml -targetdir:"${{ github.workspace }}/Tests/coveragereport" -reporttypes:Html -assemblyfilters:+MinimalApi
 
       - name: Upload code coverage report
         uses: actions/upload-artifact@v2
